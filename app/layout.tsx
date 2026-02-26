@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ActiveSectionProvider } from "@/providers/active-section-provider";
+import { Analytics } from "@vercel/analytics/react";
 import { siteMetadata } from "@/content/site";
 import "./globals.css";
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen font-sans antialiased">
         <ThemeProvider>
           <ActiveSectionProvider>{children}</ActiveSectionProvider>
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
