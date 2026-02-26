@@ -213,13 +213,7 @@ export function AppMockup() {
   }, [phase, flashStage]);
 
   if (prefersReducedMotion) {
-    return (
-      <div className="mx-auto aspect-[4/3] w-full max-w-5xl overflow-hidden rounded-xl shadow-2xl" style={{ background: c.bgApp }}>
-        <div className="flex h-full items-center justify-center">
-          <Image src="/assets/armbian-logo.png" alt="Armbian" width={240} height={37} className="opacity-80" style={{ filter: c.logoFilter }} />
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const homeVisible = phase === "home" || isModal(phase);
