@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { RefreshCw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 /* ─── types ───────────────────────────────────────── */
 type ServiceState = "up" | "down" | "checking";
@@ -167,20 +168,16 @@ function ServiceStatusModal({
   onClose: () => void;
   onRefresh: () => void;
 }) {
-  // close on Escape
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
+  const panelRef = useFocusTrap({ enabled: true, onEscape: onClose });
 
   const lastCheck = services.find((s) => s.checkedAt)?.checkedAt;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="service-status-title"
       onClick={onClose}
     >
       {/* backdrop */}
@@ -188,6 +185,7 @@ function ServiceStatusModal({
 
       {/* panel */}
       <div
+        ref={panelRef}
         className={cn(
           "bg-card text-card-foreground relative w-full max-w-md rounded-xl border shadow-lg",
         )}
@@ -195,7 +193,7 @@ function ServiceStatusModal({
       >
         {/* header */}
         <div className="flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-sm font-semibold">Service Status</h2>
+          <h2 id="service-status-title" className="text-sm font-semibold">Service Status</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"

@@ -8,6 +8,7 @@ import { Testimonials } from "@/sections/testimonials";
 import { Community } from "@/sections/community";
 import { Footer } from "@/sections/footer";
 import { AmbientGlow } from "@/components/ambient-glow";
+import { SectionErrorBoundary } from "@/components/section-error-boundary";
 
 export default function Home() {
   return (
@@ -20,7 +21,9 @@ export default function Home() {
           <Hero />
           <Features />
           <HowItWorks />
-          <Downloads />
+          <SectionErrorBoundary sectionName="Downloads">
+            <Downloads />
+          </SectionErrorBoundary>
           <Testimonials />
           <Community />
         </main>

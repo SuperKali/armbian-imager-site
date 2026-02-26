@@ -1,9 +1,73 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { Check, Factory, Cpu, Database, HardDrive, FolderOpen } from "lucide-react";
 import { useC } from "./theme";
 import { useD, selMfg, selBoard, selOs } from "./data";
 import { STEPS, ACCENT, GREEN } from "./constants";
+
+const MARQUEE_MAX_WIDTH = 180;
+const MARQUEE_SEPARATOR_WIDTH = 5;
+
+function MarqueeText({ text, color }: { text: string; color: string }) {
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const [isOverflow, setIsOverflow] = useState(false);
+  const [scrollPercent, setScrollPercent] = useState(50);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (!containerRef.current) return;
+
+      const computedStyle = window.getComputedStyle(containerRef.current);
+      const measureSpan = document.createElement("span");
+      measureSpan.style.cssText = `
+        position: absolute; visibility: hidden; white-space: nowrap;
+        font-family: ${computedStyle.fontFamily}; font-size: ${computedStyle.fontSize};
+        font-weight: ${computedStyle.fontWeight}; letter-spacing: ${computedStyle.letterSpacing};
+        text-transform: ${computedStyle.textTransform};
+      `;
+      measureSpan.textContent = text;
+
+      let singleTextWidth = 0;
+      try {
+        document.body.appendChild(measureSpan);
+        singleTextWidth = measureSpan.offsetWidth;
+      } finally {
+        measureSpan.parentNode?.removeChild(measureSpan);
+      }
+
+      const overflow = singleTextWidth > MARQUEE_MAX_WIDTH;
+      setIsOverflow(overflow);
+
+      if (overflow) {
+        const scrollDistance = singleTextWidth + MARQUEE_SEPARATOR_WIDTH;
+        const totalWidth = scrollDistance * 2;
+        setScrollPercent((scrollDistance / totalWidth) * 100);
+      }
+    };
+
+    const timer = setTimeout(checkOverflow, 50);
+    window.addEventListener("resize", checkOverflow);
+    return () => { clearTimeout(timer); window.removeEventListener("resize", checkOverflow); };
+  }, [text]);
+
+  return (
+    <span
+      ref={containerRef}
+      className={`mockup-marquee-container ${isOverflow ? "overflow" : ""}`}
+      style={{ maxWidth: MARQUEE_MAX_WIDTH, color, fontSize: 15, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px" } as React.CSSProperties}
+      title={text}
+    >
+      <span
+        className="mockup-marquee-content"
+        style={isOverflow ? { "--scroll-percent": `-${scrollPercent}%` } as React.CSSProperties : undefined}
+      >
+        {text}
+        {isOverflow && <>&nbsp;{text}</>}
+      </span>
+    </span>
+  );
+}
 
 export function StepPills({ completed }: { completed: number[] }) {
   const c = useC();
@@ -60,8 +124,7 @@ export function HomeCards({ activeCard, clicking, step }: { activeCard: number; 
                 <b.Icon style={{ width: 36, height: 36, color: highlighted ? ACCENT : c.textDim2 }} />
                 {isFilled ? (
                   <>
-                    <span className="w-full text-center text-[15px] font-bold uppercase tracking-[0.4px]"
-                      style={{ color: ACCENT, overflow: "hidden", textOverflow: "clip", whiteSpace: "nowrap" }}>{b.filled.text}</span>
+                    <MarqueeText text={b.filled.text} color={ACCENT} />
                     {b.filled.sub && <span className="text-[12px]" style={{ color: c.textSec }}>{b.filled.sub}</span>}
                   </>
                 ) : (

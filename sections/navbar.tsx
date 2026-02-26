@@ -5,12 +5,14 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ScrollLink } from "@/components/scroll-link";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 import { navigation } from "@/content/navigation";
 import Image from "next/image";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuRef = useFocusTrap({ enabled: mobileOpen, onEscape: () => setMobileOpen(false) });
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -59,6 +61,8 @@ export function Navbar() {
             size="icon"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -67,7 +71,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="bg-background/95 border-border border-b backdrop-blur-md md:hidden">
+        <div ref={menuRef} id="mobile-nav-menu" role="navigation" aria-label="Mobile navigation" className="bg-background/95 border-border border-b backdrop-blur-md md:hidden">
           <div className="flex flex-col gap-4 px-4 py-4">
             {navigation.map((item) => (
               <ScrollLink

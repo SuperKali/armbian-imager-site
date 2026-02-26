@@ -26,6 +26,7 @@ export function AppMockup() {
   const [progress, setProgress] = useState(0);
   const [flashStage, setFlashStage] = useState(0);
   const [clicking, setClicking] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   // Fetch API data on mount
   useEffect(() => {
@@ -35,7 +36,7 @@ export function AppMockup() {
         setApiData(processed);
         setSelection(makeSelection(processed));
       }
-    }).catch(() => {});
+    }).catch(() => setFetchError(true));
   }, []);
 
   // Preload images for the current cycle
@@ -120,7 +121,17 @@ export function AppMockup() {
     return () => clearInterval(t);
   }, [phase, flashStage]);
 
-  if (prefersReducedMotion || !apiData || !selection) return null;
+  if (prefersReducedMotion) return null;
+
+  if (fetchError) {
+    return (
+      <p className="text-muted-foreground py-8 text-center text-sm">
+        Unable to load the app preview right now.
+      </p>
+    );
+  }
+
+  if (!apiData || !selection) return null;
 
   const homeVisible = phase === "home" || isModal(phase);
 
@@ -201,6 +212,11 @@ export function AppMockup() {
             @keyframes mockup-indet-kf { 0%{transform:translateX(-100%) scaleX(0.8)} 50%{transform:translateX(250%) scaleX(1)} 100%{transform:translateX(600%) scaleX(0.8)} }
             .mockup-scroll { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -ms-overflow-style: none; }
             .mockup-scroll::-webkit-scrollbar { display: none; }
+            .mockup-marquee-container { display: inline-block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: center; }
+            .mockup-marquee-container.overflow { text-overflow: clip; }
+            .mockup-marquee-container .mockup-marquee-content { display: inline-block; }
+            .mockup-marquee-container.overflow .mockup-marquee-content { animation: mockup-marquee-kf 12s linear infinite; }
+            @keyframes mockup-marquee-kf { 0%{transform:translateX(0)} 100%{transform:translateX(var(--scroll-percent, -50%))} }
           `}</style>
         </div>
       </DataCtx.Provider>

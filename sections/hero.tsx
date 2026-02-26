@@ -1,9 +1,11 @@
 "use client";
 
+import { Download, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MotionWrapper } from "@/components/motion-wrapper";
 import { SectionObserver } from "@/components/section-observer";
 import { AppMockup } from "@/components/app-mockup";
+import { SectionErrorBoundary } from "@/components/section-error-boundary";
 import { heroContent } from "@/content/hero";
 import { scaleInVariants } from "@/lib/animation-variants";
 
@@ -27,10 +29,14 @@ export function Hero() {
           <MotionWrapper>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Button size="lg" asChild>
-                <a href={heroContent.primaryCta.href}>{heroContent.primaryCta.label}</a>
+                <a href={heroContent.primaryCta.href}>
+                  <Download className="h-4 w-4" />
+                  {heroContent.primaryCta.label}
+                </a>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <a href={heroContent.secondaryCta.href} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-4 w-4" />
                   {heroContent.secondaryCta.label}
                 </a>
               </Button>
@@ -38,7 +44,9 @@ export function Hero() {
           </MotionWrapper>
 
           <MotionWrapper variants={scaleInVariants} className="mt-12 hidden lg:block">
-            <AppMockup />
+            <SectionErrorBoundary sectionName="App preview">
+              <AppMockup />
+            </SectionErrorBoundary>
           </MotionWrapper>
         </div>
       </div>
