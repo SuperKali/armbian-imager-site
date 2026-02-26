@@ -96,6 +96,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <link rel="preconnect" href="https://api.github.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cache.armbian.com" />
+        <link rel="dns-prefetch" href="https://github.armbian.com" />
+        <link rel="dns-prefetch" href="https://paste.armbian.com" />
       </head>
       <body className="min-h-screen font-sans antialiased">
         <ThemeProvider>
