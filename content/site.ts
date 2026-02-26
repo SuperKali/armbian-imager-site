@@ -5,5 +5,5 @@ export const siteMetadata: SiteMetadata = {
   description:
     "Armbian Imager is a free, open-source tool to flash Armbian OS images to SD cards and USB drives. Supports Windows, macOS, and Linux with built-in integrity verification.",
   url: "https://imager.armbian.com",
-  ogImage: "/opengraph-image",
+  ogImage: "/og-image.png",
 };
