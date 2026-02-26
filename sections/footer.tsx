@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Github, MessageCircle, ExternalLink } from "lucide-react";
 import { footerSections, footerLicense, footerCopyright } from "@/content/footer";
+import { ServiceStatusBadge } from "@/components/service-status";
 
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/armbian/imager", icon: Github },
@@ -53,6 +54,8 @@ export function Footer() {
                 </a>
               ))}
             </div>
+
+            <ServiceStatusBadge />
           </div>
 
           {/* Link columns */}
