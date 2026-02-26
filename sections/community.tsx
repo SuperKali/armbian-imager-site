@@ -1,9 +1,8 @@
-"use client";
-
 import { ExternalLink, ArrowRight } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";
+import { HoverCard } from "@/components/hover-card";
 import { communityLinks, contributeContent, contributeWays } from "@/content/community";
 import { staggerContainerVariants, fadeUpVariants } from "@/lib/animation-variants";
 
@@ -22,15 +21,7 @@ export function Community() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {communityLinks.map((link) => (
               <MotionWrapper key={link.title} variants={fadeUpVariants}>
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group border-border hover:border-primary-500/30 relative block h-full overflow-hidden rounded-2xl border bg-gradient-to-b from-transparent to-transparent transition-all hover:to-primary-500/[0.03]"
-                >
-                  {/* Accent line on hover */}
-                  <div className="bg-primary-500 absolute inset-x-0 top-0 h-px opacity-0 transition-opacity group-hover:opacity-100" />
-
+                <HoverCard as="a" href={link.href}>
                   <div className="p-6">
                     <div className="mb-4 flex items-center justify-between">
                       <div className="bg-primary-500/10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
@@ -52,7 +43,7 @@ export function Community() {
                       {link.description}
                     </p>
                   </div>
-                </a>
+                </HoverCard>
               </MotionWrapper>
             ))}
           </div>

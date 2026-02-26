@@ -52,7 +52,12 @@ export interface Testimonial {
   quote: string;
   author: string;
   role: string;
-  source?: string;
+  source: string;
+}
+
+export interface ContributeWay {
+  label: string;
+  icon: LucideIcon;
 }
 
 export interface SiteMetadata {

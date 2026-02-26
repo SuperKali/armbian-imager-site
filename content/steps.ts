@@ -1,4 +1,4 @@
-import { Download, Factory, Cpu, HardDrive, Database, Zap } from "lucide-react";
+import { Download, Cpu, HardDrive, Database, Zap } from "lucide-react";
 import type { Step } from "./types";
 
 export const steps: Step[] = [

@@ -5,6 +5,7 @@ import { Star, ExternalLink, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";
+import { HoverCard } from "@/components/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { testimonials, GITHUB_STARS_URL } from "@/content/testimonials";
 import { staggerContainerVariants, fadeUpVariants } from "@/lib/animation-variants";
@@ -61,21 +62,13 @@ export function Testimonials() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((t) => (
               <MotionWrapper key={t.author} variants={fadeUpVariants}>
-                <a
-                  href={t.source}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group border-border hover:border-primary-500/30 relative block h-full overflow-hidden rounded-2xl border bg-gradient-to-b from-transparent to-transparent transition-all hover:to-primary-500/[0.03]"
-                >
-                  {/* Accent line on hover */}
-                  <div className="bg-primary-500 absolute inset-x-0 top-0 h-px opacity-0 transition-opacity group-hover:opacity-100" />
-
+                <HoverCard as="a" href={t.source}>
                   <div className="flex h-full flex-col p-6">
                     {/* Quote icon */}
                     <Quote className="text-primary-500/20 mb-3 h-6 w-6" />
 
                     {/* Quote text */}
-                    <p className="mb-5 flex-1 text-[14px] leading-relaxed italic">
+                    <p className="mb-5 flex-1 text-sm leading-relaxed italic">
                       &ldquo;{t.quote}&rdquo;
                     </p>
 
@@ -88,7 +81,7 @@ export function Testimonials() {
                       <ExternalLink className="text-muted-foreground h-3.5 w-3.5 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-60" />
                     </div>
                   </div>
-                </a>
+                </HoverCard>
               </MotionWrapper>
             ))}
           </div>

@@ -1,5 +1,3 @@
-"use client";
-
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";

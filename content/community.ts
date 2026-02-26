@@ -1,5 +1,5 @@
 import { Github, MessageCircle, Hash, Users, GitPullRequest, Bug, BookOpen, Cpu } from "lucide-react";
-import type { CommunityLink, ContributeContent } from "./types";
+import type { CommunityLink, ContributeContent, ContributeWay } from "./types";
 
 export const communityLinks: CommunityLink[] = [
   {
@@ -32,7 +32,7 @@ export const communityLinks: CommunityLink[] = [
   },
 ];
 
-export const contributeWays = [
+export const contributeWays: ContributeWay[] = [
   { label: "Submit a PR", icon: GitPullRequest },
   { label: "Report a bug", icon: Bug },
   { label: "Improve docs", icon: BookOpen },

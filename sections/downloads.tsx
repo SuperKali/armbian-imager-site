@@ -1,15 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Monitor, Apple, Terminal, ExternalLink } from "lucide-react";
+import { Download, ExternalLink } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GITHUB_RELEASE_URL } from "@/content/downloads";
+import {
+  GITHUB_RELEASE_URL,
+  PLATFORMS,
+  FALLBACK_ASSETS,
+  INITIAL_VERSION,
+  INITIAL_TAG,
+  mapRelease,
+  type Asset,
+} from "@/content/downloads";
 import { staggerContainerVariants, fadeUpVariants } from "@/lib/animation-variants";
-
-type Asset = { label: string; href: string };
 
 function detectOS(): string {
   if (typeof navigator === "undefined") return "linux";
@@ -19,56 +25,13 @@ function detectOS(): string {
   return "linux";
 }
 
-function mapRelease(assets: { name: string; browser_download_url: string }[]): Record<string, Asset[]> {
-  const find = (pattern: string) =>
-    assets.find((a) => a.name.includes(pattern) && !a.name.endsWith(".sig"))?.browser_download_url || "";
-  return {
-    windows: [
-      { label: "Intel / AMD (x64)", href: find("x64-setup.exe") },
-      { label: "ARM (arm64)", href: find("arm64-setup.exe") },
-    ],
-    macos: [
-      { label: "Apple Silicon (M1–M4)", href: find("aarch64.dmg") },
-      { label: "Intel (x64)", href: find("x64.dmg") },
-    ],
-    linux: [
-      { label: "Intel / AMD (x64)", href: find("amd64.AppImage") },
-      { label: "ARM (arm64)", href: find("aarch64.AppImage") },
-    ],
-  };
-}
-
-const FV = "1.2.8";
-const FT = "v1.2.8";
-const B = "https://github.com/armbian/imager/releases/download";
-const FALLBACK: Record<string, Asset[]> = {
-  windows: [
-    { label: "Intel / AMD (x64)", href: `${B}/${FT}/Armbian.Imager_${FV}_x64-setup.exe` },
-    { label: "ARM (arm64)", href: `${B}/${FT}/Armbian.Imager_${FV}_arm64-setup.exe` },
-  ],
-  macos: [
-    { label: "Apple Silicon (M1–M4)", href: `${B}/${FT}/Armbian.Imager_${FV}_aarch64.dmg` },
-    { label: "Intel (x64)", href: `${B}/${FT}/Armbian.Imager_${FV}_x64.dmg` },
-  ],
-  linux: [
-    { label: "Intel / AMD (x64)", href: `${B}/${FT}/Armbian.Imager_${FV}_amd64.AppImage` },
-    { label: "ARM (arm64)", href: `${B}/${FT}/Armbian.Imager_${FV}_aarch64.AppImage` },
-  ],
-};
-
-const PLATFORMS = [
-  { id: "windows", name: "Windows", icon: Monitor, format: ".exe installer" },
-  { id: "macos", name: "macOS", icon: Apple, format: ".dmg disk image" },
-  { id: "linux", name: "Linux", icon: Terminal, format: "AppImage" },
-] as const;
-
 export function Downloads() {
-  const [version, setVersion] = useState(FV);
-  const [tag, setTag] = useState(FT);
-  const [assetMap, setAssetMap] = useState<Record<string, Asset[]>>(FALLBACK);
+  const [version, setVersion] = useState(INITIAL_VERSION);
+  const [tag, setTag] = useState(INITIAL_TAG);
+  const [assetMap, setAssetMap] = useState<Record<string, Asset[]>>(FALLBACK_ASSETS);
   const [userOS, setUserOS] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isCached, setIsCached] = useState(false);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     setUserOS(detectOS());
@@ -82,7 +45,7 @@ export function Downloads() {
         }
       })
       .catch(() => {
-        setIsCached(true);
+        setUsingFallback(true);
       })
       .finally(() => {
         setLoading(false);
@@ -151,21 +114,17 @@ export function Downloads() {
                             <Skeleton className="h-[46px] rounded-xl" />
                           </>
                         ) : (
-                          assets.map((asset, i) => (
+                          assets.map((asset) => (
                             <a
                               key={asset.label}
                               href={asset.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={`group flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
-                                isDetected && i === 0
-                                  ? "border-primary-500 bg-primary-500 text-white hover:bg-primary-600"
-                                  : "border-border hover:border-primary-500/50 hover:bg-primary-500/[0.04] text-foreground"
-                              }`}
+                              className="group border-border hover:border-primary-500/50 hover:bg-primary-500/[0.04] text-foreground flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all"
                             >
-                              <Download className={`h-4 w-4 shrink-0 ${isDetected && i === 0 ? "text-white/80" : "text-muted-foreground group-hover:text-primary-500"}`} />
+                              <Download className="text-muted-foreground group-hover:text-primary-500 h-4 w-4 shrink-0" />
                               <span className="flex-1">{asset.label}</span>
-                              <svg className={`h-4 w-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 ${isDetected && i === 0 ? "text-white/60" : "text-primary-500"}`} viewBox="0 0 16 16" fill="none">
+                              <svg className="text-primary-500 h-4 w-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" viewBox="0 0 16 16" fill="none">
                                 <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </a>
@@ -180,7 +139,7 @@ export function Downloads() {
           </div>
         </MotionWrapper>
 
-        {isCached && (
+        {usingFallback && (
           <p className="text-muted-foreground mt-4 text-center text-xs">
             Showing cached version — latest release info unavailable right now.
           </p>

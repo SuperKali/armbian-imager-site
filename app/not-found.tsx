@@ -1,18 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { AmbientGlow } from "@/components/ambient-glow";
 
 export default function NotFound() {
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      {/* Ambient glow matching main page */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/2 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/4 rounded-full bg-primary-500/[0.07] blur-[120px]" />
-        <div className="absolute bottom-0 left-1/4 h-[400px] w-[600px] translate-y-1/4 rounded-full bg-primary-500/[0.04] blur-[100px]" />
-      </div>
+      <AmbientGlow />
 
       <div className="relative z-10 flex flex-col items-center px-4 text-center">
-        {/* Logo */}
-        <img
+        <Image
           src="/icon-192.png"
           alt="Armbian"
           width={64}
@@ -20,7 +17,6 @@ export default function NotFound() {
           className="mb-6 rounded-2xl"
         />
 
-        {/* 404 indicator */}
         <span className="text-primary-500 mb-4 text-sm font-semibold tracking-widest uppercase">
           404
         </span>
