@@ -5,6 +5,7 @@ import { Download, Monitor, Apple, Terminal, ExternalLink } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GITHUB_RELEASE_URL } from "@/content/downloads";
 import { staggerContainerVariants, fadeUpVariants } from "@/lib/animation-variants";
 
@@ -66,6 +67,8 @@ export function Downloads() {
   const [tag, setTag] = useState(FT);
   const [assetMap, setAssetMap] = useState<Record<string, Asset[]>>(FALLBACK);
   const [userOS, setUserOS] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isCached, setIsCached] = useState(false);
 
   useEffect(() => {
     setUserOS(detectOS());
@@ -78,7 +81,12 @@ export function Downloads() {
           if (data.assets?.length) setAssetMap(mapRelease(data.assets));
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setIsCached(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   // Detected OS first
@@ -137,25 +145,32 @@ export function Downloads() {
 
                       {/* Download buttons */}
                       <div className="flex flex-col gap-2.5">
-                        {assets.map((asset, i) => (
-                          <a
-                            key={asset.label}
-                            href={asset.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`group flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
-                              isDetected && i === 0
-                                ? "border-primary-500 bg-primary-500 text-white hover:bg-primary-600"
-                                : "border-border hover:border-primary-500/50 hover:bg-primary-500/[0.04] text-foreground"
-                            }`}
-                          >
-                            <Download className={`h-4 w-4 shrink-0 ${isDetected && i === 0 ? "text-white/80" : "text-muted-foreground group-hover:text-primary-500"}`} />
-                            <span className="flex-1">{asset.label}</span>
-                            <svg className={`h-4 w-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 ${isDetected && i === 0 ? "text-white/60" : "text-primary-500"}`} viewBox="0 0 16 16" fill="none">
-                              <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </a>
-                        ))}
+                        {loading ? (
+                          <>
+                            <Skeleton className="h-[46px] rounded-xl" />
+                            <Skeleton className="h-[46px] rounded-xl" />
+                          </>
+                        ) : (
+                          assets.map((asset, i) => (
+                            <a
+                              key={asset.label}
+                              href={asset.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`group flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium transition-all ${
+                                isDetected && i === 0
+                                  ? "border-primary-500 bg-primary-500 text-white hover:bg-primary-600"
+                                  : "border-border hover:border-primary-500/50 hover:bg-primary-500/[0.04] text-foreground"
+                              }`}
+                            >
+                              <Download className={`h-4 w-4 shrink-0 ${isDetected && i === 0 ? "text-white/80" : "text-muted-foreground group-hover:text-primary-500"}`} />
+                              <span className="flex-1">{asset.label}</span>
+                              <svg className={`h-4 w-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 ${isDetected && i === 0 ? "text-white/60" : "text-primary-500"}`} viewBox="0 0 16 16" fill="none">
+                                <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </a>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
@@ -164,6 +179,12 @@ export function Downloads() {
             })}
           </div>
         </MotionWrapper>
+
+        {isCached && (
+          <p className="text-muted-foreground mt-4 text-center text-xs">
+            Showing cached version — latest release info unavailable right now.
+          </p>
+        )}
 
         {/* All releases link */}
         <MotionWrapper>

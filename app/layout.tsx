@@ -47,6 +47,43 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Armbian Imager",
+    description: siteMetadata.description,
+    url: siteMetadata.url,
+    operatingSystem: "Windows, macOS, Linux",
+    applicationCategory: "DeveloperApplication",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    downloadUrl: "https://github.com/armbian/imager/releases/latest",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Armbian",
+    url: "https://www.armbian.com",
+    logo: `${siteMetadata.url}/icon-512.png`,
+    sameAs: [
+      "https://github.com/armbian",
+      "https://forum.armbian.com",
+      "https://discord.com/invite/armbian",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Armbian Imager",
+    url: siteMetadata.url,
+    description: siteMetadata.description,
+  },
+];
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -54,6 +91,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-screen font-sans antialiased">
         <ThemeProvider>
           <ActiveSectionProvider>{children}</ActiveSectionProvider>

@@ -5,11 +5,13 @@ import { Star, ExternalLink, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/section-heading";
 import { SectionObserver } from "@/components/section-observer";
 import { MotionWrapper } from "@/components/motion-wrapper";
+import { Skeleton } from "@/components/ui/skeleton";
 import { testimonials, GITHUB_STARS_URL } from "@/content/testimonials";
 import { staggerContainerVariants, fadeUpVariants } from "@/lib/animation-variants";
 
 export function Testimonials() {
   const [stars, setStars] = useState(148);
+  const [starsLoading, setStarsLoading] = useState(true);
 
   useEffect(() => {
     fetch(GITHUB_STARS_URL)
@@ -17,7 +19,10 @@ export function Testimonials() {
       .then((data) => {
         if (data.stargazers_count) setStars(data.stargazers_count);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        setStarsLoading(false);
+      });
   }, []);
 
   return (
@@ -40,7 +45,11 @@ export function Testimonials() {
               className="border-border hover:border-primary-500/30 group inline-flex items-center gap-2.5 rounded-full border px-4 py-2 text-sm transition-all"
             >
               <Star className="text-primary-500 h-4 w-4 fill-current" />
-              <span className="font-semibold">{stars.toLocaleString()}</span>
+              {starsLoading ? (
+                <Skeleton className="h-4 w-8" />
+              ) : (
+                <span className="font-semibold">{stars.toLocaleString()}</span>
+              )}
               <span className="text-muted-foreground">stars on GitHub</span>
               <ExternalLink className="text-muted-foreground h-3 w-3 opacity-0 transition-opacity group-hover:opacity-60" />
             </a>
