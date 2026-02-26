@@ -16,18 +16,20 @@
 
 ## Overview
 
-A single-page, responsive website built with **Next.js 16**, **Tailwind CSS v4**, and **Framer Motion**. It showcases Armbian Imager's features, walks users through the flashing process, provides platform downloads (fetched live from GitHub Releases), and highlights community testimonials.
+A single-page, responsive website built with **Next.js 16**, **Tailwind CSS v4**, and **Framer Motion**. It showcases Armbian Imager's features, walks users through the flashing process, provides platform downloads (fetched live from GitHub Releases), and highlights community testimonials. Includes a live interactive mockup of the Armbian Imager app and real-time service status monitoring.
 
 ### Sections
 
 | Section | Description |
 |---------|-------------|
-| **Hero** | Headline, subtitle, and primary CTA |
-| **Features** | Six feature cards (300+ boards, verification, 18 languages, caching, auto-updates, cross-platform) |
-| **How It Works** | Five-step visual walkthrough |
-| **Downloads** | Platform downloads pulled live from the latest GitHub Release |
-| **Testimonials** | Community and press quotes |
-| **Community** | Links to forums, GitHub, IRC, and contribution CTA |
+| **Navbar** | Sticky navigation with scroll-aware active section highlighting and dark/light toggle |
+| **Hero** | Headline, CTAs, live GitHub stars counter, and animated app mockup (desktop) |
+| **Features** | Six feature cards with hover effects (300+ boards, verification, 18 languages, caching, auto-updates, cross-platform) |
+| **How It Works** | Five-step visual walkthrough with scroll-triggered animations |
+| **Downloads** | Platform-specific downloads fetched live from the latest GitHub Release with loading skeletons |
+| **Testimonials** | Community and press quotes from YouTubers, journalists, and developers |
+| **Community** | Forum, GitHub, IRC links and contribution CTA |
+| **Footer** | Social links (GitHub, Forum, Discord), project links, service status indicator |
 
 ## Getting Started
 
@@ -48,17 +50,43 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Project Structure
 
 ```
-├── app/                  # Next.js App Router (layout, page, metadata, OG image)
-├── sections/             # Page sections (hero, features, downloads, etc.)
-├── components/           # Shared UI components (button, card, motion wrappers)
-├── content/              # All copy & structured data — no hardcoded strings
-├── lib/                  # Utilities and animation variants
-├── providers/            # React context providers (theme, active section)
-├── public/assets/        # Static images and logos
-├── server.js             # Custom standalone server for cPanel/Docker
-├── next.config.ts        # Next.js configuration (standalone output)
-├── postcss.config.mjs    # PostCSS / Tailwind
-└── components.json       # shadcn/ui configuration
+├── app/
+│   ├── layout.tsx            # Root layout, metadata, JSON-LD structured data
+│   ├── page.tsx              # Main landing page
+│   ├── not-found.tsx         # Custom 404 page
+│   ├── globals.css           # Tailwind CSS v4 imports and custom styles
+│   ├── robots.ts             # robots.txt generation
+│   └── sitemap.ts            # sitemap.xml generation
+├── sections/                 # Page sections (hero, features, downloads, etc.)
+├── components/
+│   ├── app-mockup/           # Interactive Armbian Imager mockup (9 modules)
+│   │   ├── index.tsx         # Main orchestration (state, effects, layout)
+│   │   ├── types.ts          # Shared TypeScript types
+│   │   ├── constants.ts      # CDN URLs, colors, badges, flash stages
+│   │   ├── theme.ts          # Dark/light theme context
+│   │   ├── data.ts           # API data processing and selection logic
+│   │   ├── home-cards.tsx    # Step pills and selection cards
+│   │   ├── modals.tsx        # Manufacturer/board/OS/storage/confirm modals
+│   │   ├── flash-views.tsx   # Flash progress, completion views
+│   │   └── image-components.tsx  # Board and vendor image components
+│   ├── icons/                # Custom SVG icons (Discord)
+│   ├── ui/                   # shadcn/ui primitives (button, skeleton)
+│   ├── ambient-glow.tsx      # Reusable ambient background glow effect
+│   ├── hover-card.tsx        # Polymorphic hover card (div or anchor)
+│   ├── motion-wrapper.tsx    # Scroll-triggered animation wrapper
+│   ├── scroll-link.tsx       # Smooth scroll navigation link
+│   ├── section-heading.tsx   # Consistent section title component
+│   ├── section-observer.tsx  # Intersection Observer for active section
+│   ├── service-status.tsx    # Live service status indicator
+│   └── theme-toggle.tsx      # Dark/light mode toggle
+├── content/                  # All copy and data — no hardcoded strings
+├── lib/                      # Utilities and animation variants
+├── providers/                # React context providers (theme, active section)
+├── public/assets/            # Static images and logos
+├── server.js                 # Custom standalone server for cPanel/Docker
+├── next.config.ts            # Next.js configuration (standalone output)
+├── postcss.config.mjs        # PostCSS / Tailwind
+└── components.json           # shadcn/ui configuration
 ```
 
 ## Editing Content
@@ -72,9 +100,21 @@ All text and data lives in `content/`. Edit the relevant file — no component c
 | `content/hero.ts` | Hero title, subtitle, CTA buttons |
 | `content/features.ts` | Feature cards (6 items) |
 | `content/steps.ts` | "How It Works" steps (5 items) |
-| `content/downloads.ts` | GitHub Release API URL |
-| `content/community.ts` | Community links and contribute callout |
-| `content/footer.ts` | Footer link columns, license, copyright |
+| `content/downloads.ts` | Platform definitions, GitHub Release API URL, asset mapping |
+| `content/testimonials.ts` | Community and press quotes |
+| `content/community.ts` | Community links and contribution ways |
+| `content/footer.ts` | Footer link columns, social links, license, copyright |
+| `content/types.ts` | Shared TypeScript interfaces for all content |
+
+## App Mockup
+
+The interactive mockup in the hero section (`components/app-mockup/`) is a fully animated recreation of the Armbian Imager desktop app. It:
+
+- Fetches real board and OS data from the Armbian API
+- Auto-advances through the full workflow (select manufacturer → board → OS → storage → flash → done)
+- Cycles through different boards on each loop
+- Respects `prefers-reduced-motion` (hidden when enabled)
+- Only renders on `lg:` screens (hidden on mobile/tablet)
 
 ## Building for Production
 
@@ -109,7 +149,7 @@ NODE_ENV=production node server.js
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start dev server |
+| `npm run dev` | Start dev server (Turbopack) |
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
@@ -119,12 +159,13 @@ NODE_ENV=production node server.js
 
 ## Tech Stack
 
-- [Next.js 16](https://nextjs.org) — App Router, TypeScript, standalone output
+- [Next.js 16](https://nextjs.org) — App Router, TypeScript, Turbopack, standalone output
 - [Tailwind CSS v4](https://tailwindcss.com) — CSS-first configuration
 - [shadcn/ui](https://ui.shadcn.com) — Accessible component primitives
-- [Framer Motion](https://motion.dev) — Viewport-triggered animations
+- [Framer Motion](https://motion.dev) — Viewport-triggered and layout animations
 - [next-themes](https://github.com/pacocoursey/next-themes) — Dark / light mode
 - [Lucide](https://lucide.dev) — Icon library
+- [Vercel Analytics](https://vercel.com/analytics) + [Speed Insights](https://vercel.com/docs/speed-insights) — Performance monitoring
 
 ## License
 
