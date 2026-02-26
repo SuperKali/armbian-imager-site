@@ -1,4 +1,6 @@
-import type { FooterSection } from "./types";
+import { Github, MessageCircle } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/discord";
+import type { FooterSection, SocialLink } from "./types";
 
 export const footerSections: FooterSection[] = [
   {
@@ -28,6 +30,12 @@ export const footerSections: FooterSection[] = [
       { label: "Donate", href: "https://www.armbian.com/donate/" },
     ],
   },
+];
+
+export const socialLinks: SocialLink[] = [
+  { label: "GitHub", href: "https://github.com/armbian/imager", icon: Github },
+  { label: "Forum", href: "https://forum.armbian.com", icon: MessageCircle },
+  { label: "Discord", href: "https://discord.gg/armbian", icon: DiscordIcon },
 ];
 
 export const footerLicense = "Licensed under GPL-2.0";

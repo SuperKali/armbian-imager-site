@@ -60,6 +60,12 @@ export interface ContributeWay {
   icon: LucideIcon;
 }
 
+export interface SocialLink {
+  label: string;
+  href: string;
+  icon: LucideIcon | React.ComponentType<{ className?: string }>;
+}
+
 export interface SiteMetadata {
   title: string;
   description: string;
